@@ -1,0 +1,173 @@
+blueprint(7) -- Blueprint Python library
+========================================
+
+## SYNPOSIS
+
+	import blueprint
+
+	b1 = blueprint.Blueprint.create('foo')
+	b1.commit()
+
+	b2 = blueprint.Blueprint.checkout('foo')
+	b2.puppet().dumpf(gzip=True)
+	b2.chef().dumpf(gzip=True)
+	b2.bcfg2().dumpf(gzip=True)
+	b2.sh().dumpf(gzip=True)
+
+## DESCRIPTION
+
+### blueprint.Blueprint
+
+The `blueprint.Blueprint` class manages blueprints stored in the local blueprint repository using the `git`(1) tools.  New blueprints are created by calling the `blueprint.Blueprint.create` class method with a _name_.  Previously committed blueprints are recalled by calling the `blueprint.Blueprint.checkout` class method with a _name_ and optionally a _commit_.  Empty blueprints are created by calling the `blueprint.Blueprint` constructor.
+
+`blueprint.Blueprint` objects may be subtracted from one another.
+
+`blueprint.Blueprint` objects support the following properties:
+
+* `arch`:
+  The architecture of the system that created the blueprint.  Only present if the blueprint contains source tarballs.
+* `files`:
+  A dictionary that maps path names to file properties.  Each object contains `content`, `encoding`, `group`, `mode`, and `owner`.
+* `managers`:
+  A computed dictionary of each package manager mapped to its package manager.  Useful for reversing the algorithm described in `blueprint`(5).
+* `name`:
+  This blueprint's name.
+* `packages`:
+  A dictionary of package managers that map to dictionaries of managed packages mapped to a list of version numbers to be installed.
+* `services`:
+  A dictionary of service managers that map to dictionaries of managed services mapped to resources on which the service depends.
+* `sources`:
+  A dictionary that maps directory names to the name of the tarball that contains the files to be extracted there.
+
+`dumps()` serializes and returns the blueprint as JSON.
+
+`commit(message=`_''_`)` records a new revision of this blueprint, optionally with _message_ as its Git commit message.
+
+`puppet()`, `chef()`, `bcfg2()`, `sh()` return `Manifest`, `Cookbook`, and `Script` objects, respectively.  See the next section.
+
+`walk()` is a generic implementation of the algorithm described in `blueprint`(5) which accepts callbacks as keyword arguments:
+
+* `before_sources():`
+  Executed before source tarballs are enumerated.
+* `source(dirname, filename, gen_content, url):`
+  Executed when a source tarball is enumerated.  Either `gen_content` or `url` will be `None`.  `gen_content`, when not `None`, is a callable that will return the file's contents.
+* `after_sources():`
+  Executed after source tarballs are enumerated.
+* `before_files():`
+  Executed before files are enumerated.
+* `file(pathname, f):`
+  Executed when a file is enumerated.
+* `after_files():`
+  Executed after files are enumerated.
+* `before_packages(manager):`
+  Executed before a package manager's dependencies are enumerated.
+* `package(manager, package, version):`
+  Executed when a package version is enumerated.
+* `after_packages(manager):`
+  Executed after a package manager's dependencies are enumerated.
+* `before_services(manager):`
+  Executed before a service manager's dependencies are enumerated.
+* `service(manager, service, deps):`
+  Executed when a service is enumerated.
+* `service_file(manager, service, pathname):`
+  Executed when a file dependency is enumerated.
+* `service_package(manager, service, package_managername, package):`
+  Executed when a package dependency is enumerated.
+* `service_source(manager, service, dirname):`
+  Executed when a source tarball dependency is enumerated.
+* `after_services(manager):`
+  Executed after a service manager's dependencies are enumerated.
+
+The `blueprint.Blueprint` class (not individual instances) supports `destroy(`_name_`)` to destroy a blueprint, `iter()` to iterate over the names of blueprints, `load(`_f_`)` to load blueprint JSON from a file-like object, and `loads(`_s_`)` to load blueprint JSON from a string.
+
+### blueprint.backend
+
+The `blueprint.backend` module implements `blueprint-create`(1).  Each module within (for example, `blueprint.backend.apt`) must contain a function by the same name (in the example, `blueprint.backend.apt.apt`) which accepts a `blueprint.Blueprint` object and a `blueprint.rules.Rules` object.  When `blueprint.backend` is imported, it finds all such functions, lists them in `blueprint.backend.__all__`, and imports the function.  Use the backend functions thus:
+
+	import blueprint
+	b = blueprint.Blueprint()
+	import blueprint.rules
+	r = blueprint.rules.defaults()
+	import blueprint.backend
+	for funcname in blueprint.backend.__all__:
+	    getattr(blueprint.backend, funcname)(b, r)
+
+### blueprint.context_managers
+
+The `blueprint.context_managers` module implements context managers used throughout `blueprint`(1).
+
+* `blueprint.context_managers.cd(`_new\_cwd_`)`:
+  Execute in a different working directory.  The property `old_cwd` is available on the context object containing the previous working directory.
+* `blueprint.context_managers.mkdtemp(dir=`_None_`)`:
+  Create a temporary directory and execute with it as the working directory.  The property `cwd` is available on the context object containing the previous working directory.  When the context closes, the temporary directory and all its contents are removed recursively.
+
+### blueprint.frontend
+
+`blueprint.frontend.puppet.Manifest`, `blueprint.frontend.chef.Cookbook`, and `blueprint.frontend.sh.Script` all implement similar interfaces to code generation.
+
+`blueprint.frontend.puppet.puppet`, `blueprint.frontend.chef.chef`, `blueprint.frontend.bcfg2.bcfg2`, and `blueprint.frontend.sh.sh` all accept a `blueprint.Blueprint` as their argument and return one of the above types, which have the following methods.
+
+`dumps()` returns a string containing code in the language implemented by the class that received the call.  If the blueprint contains source tarballs, `dumps()` may raise `ValueError`.
+
+`dumpf(gzip=`_False_`)` returns the name of a file, possibly in a newly-created directory, containing code in the language implemented by the class that received the call.  The file or directory is created in the current working directory.  If `gzip=`_True_, the file or directory will compressed and the resulting tarball will be left in the current working directory.
+
+### blueprint.git
+
+The `blueprint.git` module exposes the `git`(1) tools to Python via the standard `subprocess` module.  `blueprint.git.git` is a direct proxy to running arbitrary Git commands.  Several commands have been wrapped specially to expose their results:
+
+* `blueprint.git.rev_parse(`_refname_`)`:
+  Return the commit associated with _refname_.
+* `blueprint.git.tree(`_commit_`)`:
+  Return the tree SHA associated with _commit_.
+* `blueprint.git.ls_tree(`_tree_`)`:
+  Generate the mode, type, SHA, and relative pathname of each file in _tree_ recursively.
+* `blueprint.git.blob(`_tree_`, `_pathname_`)`:
+  Return the blob SHA associated with _pathname_ in _tree_.
+* `blueprint.git.content(`_blob_`)`:
+  Return the contents of _blob_.
+* `blueprint.git.write_tree()`:
+  Return the tree that results from writing the current index to the object store.
+* `blueprint.git.commit_tree(`_tree_`, `_message_`, `_parent_`)`:
+  Return the commit for _tree_ and _parent_ with _message_.
+
+### blueprint.io
+
+* `blueprint.io.pull(`_server_`, `_secret_`, `_name_`)`:
+  Pull a blueprint from _secret_ and _name_ on _server_.
+* `blueprint.io.push(`_server_`, `_secret_`, `_b_`)`:
+  Push a blueprint to _secret_ and _b.name_ on _server_.
+* `blueprint.io.secret(`_server_`)`:
+  Fetch a new secret from _server_.
+
+### blueprint.io.server
+
+The `blueprint.io.server` module contains a Flask application called `app` which implements the HTTP endpoints expected by `blueprint-push`(1) and `blueprint-pull`(1).
+
+This application requires the `Flask` and `boto` Python libraries and recommends the `gunicorn` HTTP server.  The tests reqmore the `nose` and `nose-cov` Python libraries.
+
+### blueprint.managers
+
+The `blueprint.managers.PackageManager` class is a `unicode` subclass that is used as the key in the `packages` dictionary.  It is a callable that can translate package names and versions into shell commands for installing the package.  For example: `blueprint.managers.PackageManager(`_'apt'_`)(`_'python'_`, `_'2.6.6-2ubuntu1'_`)`.
+
+The `blueprint.managers.ServiceManager` class is like `blueprint.managers.PackageManager` but the callables to generate restart commands accept only one argument: the service name.  For example: `blueprint.managers.ServiceManager(`_'sysvinit'_`)(`_'ssh'_`)`.
+
+### blueprint.rules
+
+The `blueprint.rules.Rules` class is a `defaultdict(list)` subclass that responds to `ignore_file`, `ignore_package`, `ignore_service`, and `ignore_source`.  It is instantiated by `blueprint.rules.defaults()` to access `/etc/blueprintignore` and `~/.blueprintignore` or by `blueprint.rules.Rules.parse(f)` to parse `blueprintignore`(5) rules from a file-like object.
+
+## FILES
+
+* `~/.blueprints.git`:
+  The local repsitory where blueprints are stored, each on its own branch.
+
+## THEME SONG
+
+The Flaming Lips - "The W.A.N.D. (The Will Always Negates Defeat)"
+
+## AUTHOR
+
+Richard Crowley <richard@devstructure.com>
+
+## SEE ALSO
+
+Part of `blueprint`(1).

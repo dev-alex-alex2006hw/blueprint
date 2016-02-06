@@ -1,0 +1,213 @@
+blueprintignore(5) -- ignore specific resources when creating blueprints
+========================================================================
+
+## SYNOPSIS
+
+	/etc/foo
+	!foo/bar
+	baz*
+	:file:/etc/foobar
+	:package:apt/build-essential
+	!:source:/opt
+
+## DESCRIPTION
+
+Lines in `/etc/blueprintignore` and `~/.blueprintignore` are interpreted as in `blueprint-rules`(5) but in a negative context - rules enumerate resources to be ignored and `!`-prefixed rules unignore resources.
+
+As part of `blueprint-create`(1), the `/etc/blueprintignore` and `~/.blueprintignore` files that were used to create the blueprint are stored in the local blueprint repository.
+
+There are many resources that are ignored by default.  These defaults are not meant to be an exhuastive list of exceptions and edge cases.  Rather, they're meant to cover typical base installations without hassle.
+
+### Files
+
+The following files and directories are part of the default ignore list.  They can be negated using `!` just like any other pattern.
+
+* `*~`
+* `*.blueprint-template.*`
+* `*.dpkg-*`
+* `/etc/.git`
+* `/etc/.pwd.lock`
+* `/etc/X11/default-display-manager`
+* `/etc/adjtime`
+* `/etc/alternatives`
+* `/etc/apparmor`
+* `/etc/apparmor.d`
+* `/etc/blkid/blkid.tab`
+* `/etc/ca-certificates.conf`
+* `/etc/console-setup`
+* `/etc/dpkg/origins/default`
+* `/etc/fstab`
+* `/etc/group-`
+* `/etc/group`
+* `/etc/gshadow-`
+* `/etc/gshadow`
+* `/etc/hostname`
+* `/etc/init.d/.legacy-bootordering`
+* `/etc/initramfs-tools/conf.d/resume`
+* `/etc/ld.so.cache`
+* `/etc/localtime`
+* `/etc/lvm/cache`
+* `/etc/mailcap`
+* `/etc/mtab`
+* `/etc/modules`
+* `/etc/motd`
+* `/etc/network/interfaces`
+* `/etc/passwd-`
+* `/etc/passwd`
+* `/etc/popularity-contest.conf`
+* `/etc/prelink.cache`
+* `/etc/resolv.conf`
+* `/etc/rc.d`
+* `/etc/rc0.d`
+* `/etc/rc1.d`
+* `/etc/rc2.d`
+* `/etc/rc3.d`
+* `/etc/rc4.d`
+* `/etc/rc5.d`
+* `/etc/rc6.d`
+* `/etc/rcS.d`
+* `/etc/shadow-`
+* `/etc/shadow`
+* `/etc/ssh/ssh_host_key*`
+* `/etc/ssh/ssh_host_*_key*`
+* `/etc/ssl/certs`
+* `/etc/sysconfig/clock`
+* `/etc/sysconfig/i18n`
+* `/etc/sysconfig/keyboard`
+* `/etc/sysconfig/network`
+* `/etc/sysconfig/network-scripts`
+* `/etc/timezone`
+* `/etc/udev/rules.d/70-persistent-*.rules`
+* `/etc/yum.repos.d`
+
+The following files are ignored if their content matches an expected hash.  They can be negated using `!` just like any other pattern.  These comparisions are made to augment searching files from packages to handle files that are part of packages but are not explicitly listed.
+
+* `/etc/adduser.conf`
+* `/etc/apparmor.d/tunables/home.d/ubuntu`
+* `/etc/apt/apt.conf.d/00CDMountPoint`
+* `/etc/apt/apt.conf.d/00trustcdrom`
+* `/etc/chatscripts/provider`
+* `/etc/default/console-setup`
+* `/etc/default/grub`
+* `/etc/default/irqbalance`
+* `/etc/default/keyboard`
+* `/etc/default/locale`
+* `/etc/default/rcS`
+* `/etc/environment`
+* `/etc/hosts.allow`
+* `/etc/hosts.deny`
+* `/etc/initramfs-tools/modules`
+* `/etc/inputrc`
+* `/etc/iscsi/iscsid.conf`
+* `/etc/kernel-img.conf`
+* `/etc/ld.so.conf`
+* `/etc/ld.so.conf.d/nosegneg.conf`
+* `/etc/networks`
+* `/etc/nsswitch.conf`
+* `/etc/nsswitch.conf
+* `/etc/pam.d/common-account`
+* `/etc/pam.d/common-auth`
+* `/etc/pam.d/common-password`
+* `/etc/pam.d/common-session`
+* `/etc/pam.d/common-session-noninteractive`
+* `/etc/pam.d/fingerprint-auth-ac`
+* `/etc/pam.d/fingerprint-auth`
+* `/etc/pam.d/password-auth-ac`
+* `/etc/pam.d/password-auth`
+* `/etc/pam.d/smartcard-auth-ac`
+* `/etc/pam.d/smartcard-auth`
+* `/etc/pam.d/system-auth-ac`
+* `/etc/pam.d/system-auth`
+* `/etc/ppp/chap-secrets`
+* `/etc/ppp/pap-secrets`
+* `/etc/ppp/peers/provider`
+* `/etc/profile`
+* `/etc/python/debian_config`
+* `/etc/rc.local`
+* `/etc/rsyslog.d/50-default.conf`
+* `/etc/security/opasswd`
+* `/etc/selinux/restorecond.conf`
+* `/etc/selinux/targeted/modules/semanage.trans.LOCK`
+* `/etc/selinux/targeted/modules/active/file_contexts.template`
+* `/etc/selinux/targeted/modules/active/file_contexts`
+* `/etc/selinux/targeted/modules/active/users_extra`
+* `/etc/selinux/targeted/modules/active/*.pp`
+* `/etc/selinux/targeted/modules/active/netfilter_contexts`
+* `/etc/selinux/targeted/modules/active/seusers.final`
+* `/etc/selinux/targeted/modules/active/file_contexts.homedirs`
+* `/etc/selinux/targeted/modules/active/commit_num`
+* `/etc/selinux/targeted/modules/active/policy.kern`
+* `/etc/selinux/targeted/modules/active/homedir_template`
+* `/etc/selinux/targeted/modules/semanage.read.LOCK`
+* `/etc/selinux/targeted/contexts/failsafe_context`
+* `/etc/selinux/targeted/contexts/virtual_domain_context`
+* `/etc/selinux/targeted/contexts/removable_context`
+* `/etc/selinux/targeted/contexts/netfilter_contexts`
+* `/etc/selinux/targeted/contexts/userhelper_context`
+* `/etc/selinux/targeted/contexts/virtual_image_context`
+* `/etc/selinux/targeted/contexts/securetty_types`
+* `/etc/selinux/targeted/contexts/default_type`
+* `/etc/selinux/targeted/contexts/dbus_contexts`
+* `/etc/selinux/targeted/contexts/files/file_contexts`
+* `/etc/selinux/targeted/contexts/files/file_contexts.homedirs`
+* `/etc/selinux/targeted/contexts/files/media`
+* `/etc/selinux/targeted/contexts/initrc_context`
+* `/etc/selinux/targeted/contexts/x_contexts`
+* `/etc/selinux/targeted/contexts/customizable_types`
+* `/etc/selinux/targeted/contexts/users/xguest_u`
+* `/etc/selinux/targeted/contexts/users/unconfined_u`
+* `/etc/selinux/targeted/contexts/users/staff_u`
+* `/etc/selinux/targeted/contexts/users/root`
+* `/etc/selinux/targeted/contexts/users/user_u`
+* `/etc/selinux/targeted/contexts/users/guest_u`
+* `/etc/selinux/targeted/contexts/default_contexts`
+* `/etc/selinux/targeted/policy/policy.24`
+* `/etc/selinux/targeted/setrans.conf`
+* `/etc/selinux/targeted/seusers`
+* `/etc/selinux/config`
+* `/etc/selinux/restorecond_user.conf`
+* `/etc/selinux/semanage.conf`
+* `/etc/sgml/xml-core.cat`
+* `/etc/shells`
+* `/etc/ssh/sshd_config`
+* `/etc/sudoers`
+* `/etc/ufw/after.rules`
+* `/etc/ufw/after6.rules`
+* `/etc/ufw/before.rules`
+* `/etc/ufw/before6.rules`
+* `/etc/ufw/ufw.conf`
+
+### Packages
+
+All APT- or Yum-managed packages considered essential to the system are part of the default ignore list.
+
+Debian packages that are listed as `essential`, `important`, `required`, or `standard` and those that are depended upon by `ubuntu-minimal`, `ubuntu-standard`, or `ubuntu-desktop` are ignored.
+
+Yum packages that are part of the `base`, `core`, or `gnome-desktop` groups are ignored.
+
+### Sources
+
+By default, all directories except `/usr/local` are ignored as source resources.  If it is necessary to build and install software from source in another directory, use a negated source resource such as _!:source:/opt_.
+
+## FILES
+
+* `~/.blueprints.git`:
+  The local repsitory where blueprints are stored, each on its own branch.
+* `/etc/blueprintignore`, `~/.blueprintignore`:
+  Lists of filename patterns to be ignored when creating blueprints.
+* `/tmp/blueprint-apt-exclusions`, `/tmp/blueprint-yum-exclusions`:
+  The lists of APT- and Yum-managed packages considered essential.
+* `/tmp/blueprintignore`:
+  A cached copy of the complete list of ignore rules.
+
+## THEME SONG
+
+The Flaming Lips - "The W.A.N.D. (The Will Always Negates Defeat)"
+
+## AUTHOR
+
+Richard Crowley <richard@devstructure.com>
+
+## SEE ALSO
+
+Part of `blueprint`(1).

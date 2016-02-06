@@ -1,0 +1,140 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "BLUEPRINT" "1" "December 2011" "DevStructure" "Blueprint"
+.
+.SH "NAME"
+\fBblueprint\fR \- reverse engineer server configuration
+.
+.SH "SYNOPSIS"
+\fBblueprint\fR [\fIcommand\fR] [\fIoptions\fR][\fI\|\.\|\.\|\.\fR]
+.
+.SH "DESCRIPTION"
+\fBblueprint\fR programs track packages and system files in Git\. Use stored blueprints to build new environments anytime\. Blueprints can be used to generate Puppet modules, Chef cookbooks, or POSIX shell code\.
+.
+.TP
+\fBblueprint\-list\fR(1)
+List all blueprints\.
+.
+.TP
+\fBblueprint\-create\fR(1)
+Create a blueprint\.
+.
+.TP
+\fBblueprint\-rules\fR(1)
+Create a blueprint from a blueprint\-rules file\.
+.
+.TP
+\fBblueprint\-show\fR(1)
+Generate code from a blueprint\.
+.
+.TP
+\fBblueprint\-diff\fR(1)
+Save the difference between two blueprints\.
+.
+.TP
+\fBblueprint\-split\fR(1)
+Split one blueprint into two others interactively\.
+.
+.TP
+\fBblueprint\-prune\fR(1)
+Select a subset of resources interactively\.
+.
+.TP
+\fBblueprint\-template\fR(1)
+Render mustache\.sh templates locally\.
+.
+.TP
+\fBblueprint\-apply\fR(1)
+Run a blueprint\'s generated shell code\.
+.
+.TP
+\fBblueprint\-push\fR(1)
+Push a blueprint to the Internet\.
+.
+.TP
+\fBblueprint\-pull\fR(1)
+Pull a blueprint from the Internet\.
+.
+.TP
+\fBblueprint\-destroy\fR(1)
+Destroy a blueprint\.
+.
+.TP
+\fBblueprint\fR(5)
+Blueprint JSON format\.
+.
+.TP
+\fBblueprintignore\fR(5)
+Ignore specific files when creating blueprints\.
+.
+.TP
+\fBblueprint\-rules\fR(5)
+Enumerate resources in blueprints\.
+.
+.TP
+\fBblueprint\.cfg\fR(5)
+Centralized blueprint service configuration\.
+.
+.TP
+\fBblueprint\-template\fR(5)
+\fBmustache\.sh\fR template language syntax\.
+.
+.TP
+\fBblueprint\-template\fR(7)
+Built\-in template data\.
+.
+.TP
+\fBblueprint\fR(7)
+Blueprint Python library\.
+.
+.SS "Plumbing"
+Much like \fBgit\fR(1) itself, \fBblueprint\fR includes many plumbing tools that make it convenient to inspect blueprints\.
+.
+.TP
+\fBblueprint\-git\fR(1)
+Low\-level access to blueprints\.
+.
+.TP
+\fBblueprint\-show\-files\fR(1)
+Show files in a blueprint\.
+.
+.TP
+\fBblueprint\-show\-ignore\fR(1)
+Show \fBblueprintignore\fR(5) rules from a blueprint\.
+.
+.TP
+\fBblueprint\-show\-packages\fR(1)
+Show packages in a blueprint\.
+.
+.TP
+\fBblueprint\-show\-services\fR(1)
+Show services in a blueprint\.
+.
+.TP
+\fBblueprint\-show\-sources\fR(1)
+Show source tarballs in a blueprint\.
+.
+.SH "FILES"
+.
+.TP
+\fB~/\.blueprints\.git\fR
+The local repsitory where blueprints are stored, each on its own branch\.
+.
+.TP
+\fB/etc/blueprint\.cfg\fR, \fB~/\.blueprint\.cfg\fR
+Optional INI\-style configuration files\. See \fBblueprint\.cfg\fR(5)\.
+.
+.TP
+\fB/etc/blueprintignore\fR, \fB~/\.blueprintignore\fR
+Lists of filename patterns to be ignored when creating blueprints\. See \fBblueprintignore\fR(5)\.
+.
+.TP
+\fB/etc/blueprint\-template\.d\fR
+\fBsource\fR\-able POSIX shell scripts ending in \fB\.sh\fR that set environment variables for use in templates\.
+.
+.SH "THEME SONG"
+The Flaming Lips \- "The W\.A\.N\.D\. (The Will Always Negates Defeat)"
+.
+.SH "AUTHOR"
+Richard Crowley \fIrichard@devstructure\.com\fR

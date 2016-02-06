@@ -1,0 +1,45 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "BLUEPRINT\-SPLIT" "1" "December 2011" "DevStructure" "Blueprint"
+.
+.SH "NAME"
+\fBblueprint\-split\fR \- split one blueprint into two others interactively
+.
+.SH "SYNOPSIS"
+\fBblueprint split\fR [\fB\-m\fR \fImessage\fR] [\fB\-q\fR] \fIsrc\fR \fIdest\-a\fR \fIdest\-b\fR
+.
+.SH "DESCRIPTION"
+\fBblueprint\-split\fR interactively splits \fIsrc\fR into \fIdest\-a\fR and \fIdest\-b\fR\. Each resource is presented to the user and the user must indicate which destination blueprint will receive the resource by typing a unique prefix of the destination blueprint\'s name\.
+.
+.P
+The input provides full \fBreadline\fR(3) support but may not be piped from some other source\.
+.
+.SH "OPTIONS"
+.
+.TP
+\fB\-m\fR \fImessage\fR, \fB\-\-message=\fR\fImessage\fR
+Commit message\.
+.
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Operate quietly\.
+.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Show a help message\.
+.
+.SH "FILES"
+.
+.TP
+\fB~/\.blueprints\.git\fR
+The local repsitory where blueprints are stored, each on its own branch\.
+.
+.SH "THEME SONG"
+The Flaming Lips \- "The W\.A\.N\.D\. (The Will Always Negates Defeat)"
+.
+.SH "AUTHOR"
+Richard Crowley \fIrichard@devstructure\.com\fR
+.
+.SH "SEE ALSO"
+Part of \fBblueprint\fR(1)\.

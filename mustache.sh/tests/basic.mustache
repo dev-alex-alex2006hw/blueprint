@@ -1,0 +1,9 @@
+{{#FOO}}foo{{/FOO}} {{BAR}} {{#BAR}}baz{{/BAR}}
+{{^FOO}}
+nothing to see here
+{{/FOO}}
+{{!comment comment { comment comment comment}}
+{{#FOO}}
+foo {{BAR}} baz
+{{/FOO}}
+{{#FOO}}{{#BAR}}{{^BAZ}}nested{nested{{/BAZ}}{{/BAR}}{{/FOO}}
